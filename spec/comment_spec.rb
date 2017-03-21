@@ -4,13 +4,13 @@ require File.expand_path('./spec_helper', File.dirname(__FILE__))
 # demonstrate the use of this gem
 describe Comment do
   before do
-    @user = User.create!
-    @comment = Comment.create!(body: 'Root comment', user: @user)
+    @visitor = Visitor.create!
+    @comment = Comment.create!(body: 'Root comment', visitor: @visitor)
   end
 
   describe 'that is valid' do
-    it 'should have a user' do
-      expect(@comment.user).not_to be_nil
+    it 'should have a visitor' do
+      expect(@comment.visitor).not_to be_nil
     end
 
     it 'should have a body' do
@@ -27,7 +27,7 @@ describe Comment do
   end
 
   it 'can add child Comments' do
-    grandchild = Comment.new(body: 'This is a grandchild', user: @user)
+    grandchild = Comment.new(body: 'This is a grandchild', visitor: @visitor)
     grandchild.save!
     grandchild.move_to_child_of(@comment)
     expect(@comment.children.size).to eq(1)
@@ -35,7 +35,7 @@ describe Comment do
 
   describe 'after having a child added' do
     before do
-      @child = Comment.create!(body: 'Child comment', user: @user)
+      @child = Comment.create!(body: 'Child comment', visitor: @visitor)
       @child.move_to_child_of(@comment)
     end
 
@@ -49,46 +49,46 @@ describe Comment do
   end
 
   describe 'finders' do
-    describe '#find_comments_by_user' do
+    describe '#find_comments_by_visitor' do
       before :each do
-        @other_user = User.create!
-        @user_comment = Comment.create!(body: 'Child comment', user: @user)
-        @non_user_comment = Comment.create!(body: 'Child comment',
-                                            user: @other_user)
-        @comments = Comment.find_comments_by_user(@user)
+        @other_visitor = Visitor.create!
+        @visitor_comment = Comment.create!(body: 'Child comment', visitor: @visitor)
+        @non_visitor_comment = Comment.create!(body: 'Child comment',
+                                            visitor: @other_visitor)
+        @comments = Comment.find_comments_by_visitor(@visitor)
       end
 
-      it 'should return all the comments created by the passed user' do
-        expect(@comments).to include(@user_comment)
+      it 'should return all the comments created by the passed visitor' do
+        expect(@comments).to include(@visitor_comment)
       end
 
-      it 'should not return comments created by non-passed users' do
-        expect(@comments).not_to include(@non_user_comment)
+      it 'should not return comments created by non-passed visitors' do
+        expect(@comments).not_to include(@non_visitor_comment)
       end
     end
 
     describe '#find_comments_for_commentable' do
       before :each do
-        @other_user = User.create!
-        @user_comment =
-          Comment.create!(body: 'from user',
-                          commentable_type: @other_user.class.to_s,
-                          commentable_id: @other_user.id,
-                          user: @user)
+        @other_visitor = Visitor.create!
+        @visitor_comment =
+          Comment.create!(body: 'from visitor',
+                          commentable_type: @other_visitor.class.to_s,
+                          commentable_id: @other_visitor.id,
+                          visitor: @visitor)
 
         @other_comment =
-          Comment.create!(body: 'from other user',
-                          commentable_type: @user.class.to_s,
-                          commentable_id: @user.id,
-                          user: @other_user)
+          Comment.create!(body: 'from other visitor',
+                          commentable_type: @visitor.class.to_s,
+                          commentable_id: @visitor.id,
+                          visitor: @other_visitor)
 
         @comments =
-          Comment.find_comments_for_commentable(@other_user.class,
-                                                @other_user.id)
+          Comment.find_comments_for_commentable(@other_visitor.class,
+                                                @other_visitor.id)
       end
 
       it 'should return the comments for the passed commentable' do
-        expect(@comments).to include(@user_comment)
+        expect(@comments).to include(@visitor_comment)
       end
 
       it 'should not return the comments for non-passed commentables' do
