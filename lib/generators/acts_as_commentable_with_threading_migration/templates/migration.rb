@@ -6,12 +6,12 @@ class ActsAsCommentableWithThreadingMigration < ActiveRecord::Migration
       t.string :title
       t.text :body
       t.string :subject
-      t.integer :user_id, null: false
+      t.integer :visitor_id, null: false
       t.integer :parent_id, :lft, :rgt
       t.timestamps
     end
 
-    add_index :comments, :user_id
+    add_index :comments, :visitor_id
     add_index :comments, [:commentable_id, :commentable_type]
   end
 

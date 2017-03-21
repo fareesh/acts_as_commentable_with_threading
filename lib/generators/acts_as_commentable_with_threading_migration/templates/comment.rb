@@ -2,25 +2,25 @@ class Comment < ActiveRecord::Base
   acts_as_nested_set scope: [:commentable_id, :commentable_type]
 
   validates :body, presence: true
-  validates :user, presence: true
+  validates :visitor, presence: true
 
   # NOTE: install the acts_as_votable plugin if you
-  # want user to vote on the quality of comments.
+  # want visitor to vote on the quality of comments.
   # acts_as_votable
 
   belongs_to :commentable, polymorphic: true
 
-  # NOTE: Comments belong to a user
-  belongs_to :user
+  # NOTE: Comments belong to a visitor
+  belongs_to :visitor
 
   # Helper class method that allows you to build a comment
-  # by passing a commentable object, a user_id, and comment text
+  # by passing a commentable object, a visitor_id, and comment text
   # example in readme
-  def self.build_from(obj, user_id, comment)
+  def self.build_from(obj, visitor_id, comment)
     new \
       commentable: obj,
       body: comment,
-      user_id: user_id
+      visitor_id: visitor_id
   end
 
   # helper method to check if a comment has children
@@ -29,9 +29,9 @@ class Comment < ActiveRecord::Base
   end
 
   # Helper class method to lookup all comments assigned
-  # to all commentable types for a given user.
-  scope :find_comments_by_user, lambda { |user|
-    where(user_id: user.id).order('created_at DESC')
+  # to all commentable types for a given visitor.
+  scope :find_comments_by_visitor, lambda { |visitor|
+    where(visitor_id: visitor.id).order('created_at DESC')
   }
 
   # Helper class method to look up all comments for
